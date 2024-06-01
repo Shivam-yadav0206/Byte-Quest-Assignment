@@ -1,7 +1,7 @@
-// import Image from "next/image";
 "use client";
 import { useEffect, useState } from "react";
-import ItemCard from "../components/ItemCard"; // Import the ItemCard component
+import { RingLoader } from "react-spinners";
+import ItemCard from "../components/ItemCard";
 import axios from "axios";
 import Image from "next/image";
 
@@ -19,6 +19,7 @@ const images = [
 
 export default function Home() {
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getProducts = async () => {
@@ -26,9 +27,11 @@ export default function Home() {
         console.log("Fetching products...");
         const res = await axios.get("https://fakestoreapi.com/products");
         setItems(res.data);
+        setLoading(false); // Update loading state
         console.log("Data fetched:", res);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setLoading(false); // Update loading state in case of error
       }
     };
 
@@ -103,12 +106,10 @@ export default function Home() {
         <nav className="flex justify-center items-center w-full mx-auto">
           <div className="nav-links nav-links-transition duration-500 md:static absolute bg-black md:min-h-fit min-h-[60vh] left-0 top-[-100%] md:w-auto w-full flex items-center px-5">
             <ul className="ml-28 flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-8">
-              {categories.map((cate , index) => (
-                
-                  <li key={index}>
-                    <p className="hover:text-yellow-900">{cate}</p>
-                  </li>
-              
+              {categories.map((cate, index) => (
+                <li key={index}>
+                  <p className="hover:text-yellow-900">{cate}</p>
+                </li>
               ))}
             </ul>
           </div>
@@ -125,21 +126,24 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-4 justify-center my-4">
-        {items.map((item: any, index) => (
-          <ItemCard key={index} {...item} />
-        ))}
-      </div>
+      {loading ? (
+        <div className="bg-brown flex justify-center items-center h-[30rem]">
+          <RingLoader color={"#713f12"} loading={true} size={80} />
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-4 justify-center my-4">
+          {items.map((item: any, index) => (
+            <ItemCard key={index} {...item} />
+          ))}
+        </div>
+      )}
 
       <footer className="bg-white rounded-lg dark:bg-gray-900 m-4">
         <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
           <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
           <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">
-            © 2024{" "}
-            <p className="hover:underline">
-              ByteQuest
-            </p>
-            . All Rights Reserved.
+            © 2024 <p className="hover:underline">ByteQuest</p>. All Rights
+            Reserved.
           </span>
         </div>
       </footer>
